@@ -16,10 +16,14 @@ import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -95,7 +99,8 @@ data class EWallet(
     val name: String,
     val gradientColors: List<Color>,
     val deeplink: String,
-    val logoText: String
+    val logoText: String,
+    val logoRes: Int
 )
 
 class MainActivity : ComponentActivity() {
@@ -723,10 +728,10 @@ fun PaymentSelectScreen(navController: NavController, qrData: String) {
     val context = LocalContext.current
 
     val wallets = listOf(
-        EWallet(name = "GCash", gradientColors = listOf(Color(0xFF1A0B2E), Color(0xFF4A1B6B)), deeplink = "gcash://qr/scan?code=$qrData", logoText = "G"),
-        EWallet(name = "Maya", gradientColors = listOf(Color(0xFF0A2E1A), Color(0xFF1B6B3A)), deeplink = "maya://qr/scan?data=$qrData", logoText = "maya"),
-        EWallet(name = "GrabPay", gradientColors = listOf(Color(0xFF0A2E1A), Color(0xFF1B6B3A)), deeplink = "grab://qr?data=$qrData", logoText = "Grab"),
-        EWallet(name = "ShopeePay", gradientColors = listOf(Color(0xFF2E0A0A), Color(0xFF6B1B1B)), deeplink = "shopee://qr?code=$qrData", logoText = "S")
+        EWallet(name = "GCash", gradientColors = listOf(Color(0xFF1A0B2E), Color(0xFF4A1B6B)), deeplink = "gcash://qr/scan?code=$qrData", logoText = "G", logoRes = R.drawable.gcash),
+        EWallet(name = "Maya", gradientColors = listOf(Color(0xFF0A2E1A), Color(0xFF1B6B3A)), deeplink = "maya://qr/scan?data=$qrData", logoText = "maya", logoRes = R.drawable.maya),
+        EWallet(name = "GrabPay", gradientColors = listOf(Color(0xFF0A2E1A), Color(0xFF1B6B3A)), deeplink = "grab://qr?data=$qrData", logoText = "Grab", logoRes = R.drawable.grab),
+        EWallet(name = "ShopeePay", gradientColors = listOf(Color(0xFF2E0A0A), Color(0xFF6B1B1B)), deeplink = "shopee://qr?code=$qrData", logoText = "S", logoRes = R.drawable.shopee)
     )
 
     Box(
@@ -825,11 +830,32 @@ fun EWalletCard(wallet: EWallet, onClick: () -> Unit) {
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {
-        Text(
-            text = wallet.logoText,
-            color = Color.White,
-            fontSize = 28.sp,
-            fontWeight = FontWeight.Bold
-        )
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(56.dp)
+                    .background(Color.White, RoundedCornerShape(12.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = wallet.logoRes),
+                    contentDescription = "${wallet.name} logo",
+                    modifier = Modifier
+                        .size(44.dp)
+                        .clip(RoundedCornerShape(8.dp)),
+                    contentScale = ContentScale.Fit
+                )
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = wallet.name,
+                color = Color.White,
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
     }
 }
