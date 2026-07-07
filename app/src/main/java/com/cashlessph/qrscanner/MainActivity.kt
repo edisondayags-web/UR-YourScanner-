@@ -174,7 +174,13 @@ fun processImageProxy(imageProxy: ImageProxy, onResult: (String?) -> Unit) {
         onResult(null)
     }
 }
+fun isValidQrPh(qrData: String): Boolean {
+    val text = qrData.uppercase()
 
+    return text.contains("QRPH") ||
+           text.contains("EMV") ||
+           text.startsWith("000201")
+}
 fun detectMerchant(qrData: String): String {
     return when {
         qrData.contains("gcash", ignoreCase = true) -> "GCash Merchant"
@@ -211,7 +217,11 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
                         .also {
                             it.setAnalyzer(cameraExecutor) { imageProxy ->
                                 processImageProxy(imageProxy) { result ->
-                                    if (result != null && !isProcessing) {
+                                    if (
+                                        result != null &&
+                                        isValidQrPh(result) &&
+                                        !isProcessing
+                                        ) {
                                         isProcessing = true
                                         showCheck = true
                                         toneGen.startTone(ToneGenerator.TONE_PROP_BEEP2, 150)
