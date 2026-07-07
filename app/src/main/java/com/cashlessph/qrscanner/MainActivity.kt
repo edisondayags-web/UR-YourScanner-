@@ -252,11 +252,29 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
             modifier = Modifier.fillMaxSize()
         )
 
+        // Scanner viewfinder frame + instruction
+        Box(
+            modifier = Modifier
+                .align(Alignment.Center)
+                .size(260.dp)
+                .border(3.dp, Color(0xFFFF4D8D), RoundedCornerShape(24.dp))
+        )
+
+        Text(
+            text = "Point camera at QRPH code",
+            color = Color(0xFFFF4D8D),
+            fontSize = 15.sp,
+            fontWeight = FontWeight.Medium,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .padding(top = 300.dp)
+        )
+
         IconButton(
             onClick = { navController.navigate("settings") },
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = 16.dp, top = 40.dp)
+                .padding(start = 16.dp, top = 24.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Settings,
@@ -270,7 +288,7 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
             onClick = { navController.navigate("qr_list") },
             modifier = Modifier
                 .align(Alignment.TopEnd)
-                .padding(end = 16.dp, top = 40.dp)
+                .padding(end = 16.dp, top = 24.dp)
         ) {
             Icon(
                 imageVector = Icons.Default.Help,
@@ -412,7 +430,7 @@ fun SettingsScreen(navController: NavController) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 40.dp, bottom = 24.dp),
+                    .padding(top = 24.dp, bottom = 24.dp),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
