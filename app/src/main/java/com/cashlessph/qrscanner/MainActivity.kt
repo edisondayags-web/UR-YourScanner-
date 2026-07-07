@@ -219,7 +219,6 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
                                 processImageProxy(imageProxy) { result ->
                                     if (
                                         result != null &&
-                                        isValidQrPh(result) &&
                                         !isProcessing
                                         ) {
                                         isProcessing = true
