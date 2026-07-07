@@ -1,0 +1,67 @@
+MYLOVE — STEP BY STEP LANG TO, COPY-PASTE MO LANG ISA-ISA
+==========================================================
+
+STEP 0 — sa Termux, i-extract mo muna yung zip
+------------------------------------------------
+cd ~/storage/downloads
+unzip UR-Scanner-fixed.zip -d URScanner
+cd URScanner
+
+
+STEP 1 — kung wala ka pang git/gh sa Termux
+------------------------------------------------
+pkg update -y
+pkg install git -y
+
+
+STEP 2 — i-set yung git identity mo (isang beses lang, palitan mo email/name)
+------------------------------------------------
+git config --global user.name "Edison Dayaguit"
+git config --global user.email "your-email@example.com"
+
+
+STEP 3 — gawin itong git repo tapos i-commit
+------------------------------------------------
+git init
+git add .
+git commit -m "URScanner: full skeleton with fixed MainActivity"
+git branch -M main
+
+
+STEP 4 — gumawa ka muna ng BAGONG empty repo sa github.com
+------------------------------------------------
+   1. Buksan ang browser, punta sa github.com/new
+   2. Repository name: UR-Scanner (o kahit anong gusto mo)
+   3. WAG mo lagyan ng README / .gitignore / license (empty dapat)
+   4. Create repository
+
+
+STEP 5 — i-link yung Termux repo mo sa GitHub repo (palitan mo USERNAME at REPO)
+------------------------------------------------
+git remote add origin https://github.com/USERNAME/REPO.git
+git push -u origin main
+
+   (Pag hiningan ka ng password, GAMITIN mo yung Personal Access Token mo,
+    HINDI yung normal GitHub password mo — yun yung dating na-expose mong
+    token na dapat pinalitan/na-revoke na. Kung wala ka pang bagong token:
+    github.com/settings/tokens -> Generate new token (classic) -> i-check
+    yung "repo" scope -> generate -> kopyahin -> gamitin bilang password
+    pag humingi ang Termux.)
+
+
+STEP 6 — panoorin ang build
+------------------------------------------------
+   1. Sa browser, punta sa repo mo sa GitHub
+   2. Click "Actions" tab
+   3. Makikita mo dapat tumatakbo yung "Build APK" workflow
+   4. Hintayin matapos (2-5 minutes)
+   5. Pag tapos, i-click yung workflow run -> scroll down sa "Artifacts"
+      -> "ur-scanner-debug-apk" -> download
+
+   Yun na yung APK mo, ready i-install sa phone.
+
+
+KUNG MAG-FAIL YUNG BUILD
+------------------------------------------------
+I-copy mo lang yung red na error message sa Actions log, i-send mo dito
+sa akin, aayusin natin agad.

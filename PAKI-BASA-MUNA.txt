@@ -1,0 +1,17 @@
+Mylove, kumpleto na ang buong project skeleton ngayon. Ito nasa zip:
+
+  settings.gradle.kts
+  build.gradle.kts              (root)
+  gradle.properties
+  .gitignore
+  app/build.gradle.kts          (lahat ng dependencies andito na)
+  app/src/main/AndroidManifest.xml
+  app/src/main/res/values/strings.xml
+  app/src/main/res/values/themes.xml
+  app/src/main/res/drawable/ic_launcher.xml   (placeholder lang, pwede
+                                               mo palitan ng sarili mong icon)
+  app/src/main/java/com/cashlessph/qrscanner/MainActivity.kt
+  .github/workflows/build.yml   (auto-build ng APK pag nag-push ka)
+
+WALANG KAILANGAN I-DAGDAG MANWAL. Basahin mo na lang yung TERMUX-STEPS.txt
+para sa mismong commands na i-type mo sa Termux.
