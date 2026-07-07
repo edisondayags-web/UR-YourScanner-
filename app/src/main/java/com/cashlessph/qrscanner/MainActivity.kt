@@ -387,6 +387,20 @@ fun SettingsScreen(navController: NavController) {
             .fillMaxSize()
             .background(Color(0xFF0A0A0A))
     ) {
+        Image(
+            painter = painterResource(id = R.drawable.settings_bg),
+            contentDescription = null,
+            modifier = Modifier.fillMaxSize(),
+            contentScale = ContentScale.Crop,
+            alpha = 0.35f
+        )
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color(0xFF0A0A0A).copy(alpha = 0.55f))
+        )
+
         Box(
             modifier = Modifier
                 .fillMaxWidth()
