@@ -146,18 +146,17 @@ class MainActivity : ComponentActivity() {
 // ------------------------------------------------------------------
 // QR + Merchant detection helpers (these were missing before)
 // ------------------------------------------------------------------
-
+private val qrScanner = BarcodeScanning.getClient(
+    BarcodeScannerOptions.Builder()
+        .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+        .build()
+)
 @OptIn(ExperimentalGetImage::class)
 fun processImageProxy(imageProxy: ImageProxy, onResult: (String?) -> Unit) {
     val mediaImage = imageProxy.image
     if (mediaImage != null) {
         val image = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-        val scanner = BarcodeScanning.getClient(
-            BarcodeScannerOptions.Builder()
-                .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-                .build()
-        )
-        scanner.process(image)
+        qrScanner.process(image)
             .addOnSuccessListener { barcodes ->
                 val value = barcodes.firstOrNull()?.rawValue
                 onResult(value)
