@@ -16,6 +16,8 @@ import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.ImageProxy
 import androidx.camera.core.Preview
+import androidx.camera.core.FocusMeteringAction
+import androidx.camera.core.SurfaceOrientedMeteringPointFactory
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.Image
@@ -254,12 +256,23 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
                             }
                         }
 
-                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                   val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
                     try {
                         cameraProvider.unbindAll()
-                        cameraProvider.bindToLifecycle(
+                        val camera = cameraProvider.bindToLifecycle(
                             lifecycleOwner, cameraSelector, preview, imageAnalyzer
                         )
+
+                        val meteringPointFactory = SurfaceOrientedMeteringPointFactory(
+                            previewView.width.toFloat(),
+                            previewView.height.toFloat()
+                        )
+                        val centerPoint = meteringPointFactory.createPoint(0.5f, 0.5f)
+                        val focusAction = FocusMeteringAction.Builder(
+                            centerPoint,
+                            FocusMeteringAction.FLAG_AF or FocusMeteringAction.FLAG_AE
+                        ).disableAutoCancel().build()
+                        camera.cameraControl.startFocusAndMetering(focusAction)
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
