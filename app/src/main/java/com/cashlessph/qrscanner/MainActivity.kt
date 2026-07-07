@@ -98,7 +98,7 @@ abstract class AppDatabase : RoomDatabase() {
 data class EWallet(
     val name: String,
     val gradientColors: List<Color>,
-    val deeplink: String,
+    val packageName: String,
     val logoText: String,
     val logoRes: Int
 )
@@ -728,10 +728,10 @@ fun PaymentSelectScreen(navController: NavController, qrData: String) {
     val context = LocalContext.current
 
     val wallets = listOf(
-        EWallet(name = "GCash", gradientColors = listOf(Color(0xFF1A0B2E), Color(0xFF4A1B6B)), deeplink = "gcash://qr/scan?code=$qrData", logoText = "G", logoRes = R.drawable.gcash),
-        EWallet(name = "Maya", gradientColors = listOf(Color(0xFF0A2E1A), Color(0xFF1B6B3A)), deeplink = "maya://qr/scan?data=$qrData", logoText = "maya", logoRes = R.drawable.maya),
-        EWallet(name = "GrabPay", gradientColors = listOf(Color(0xFF0A2E1A), Color(0xFF1B6B3A)), deeplink = "grab://qr?data=$qrData", logoText = "Grab", logoRes = R.drawable.grab),
-        EWallet(name = "ShopeePay", gradientColors = listOf(Color(0xFF2E0A0A), Color(0xFF6B1B1B)), deeplink = "shopee://qr?code=$qrData", logoText = "S", logoRes = R.drawable.shopee)
+        EWallet(name = "GCash", gradientColors = listOf(Color(0xFF1A0B2E), Color(0xFF4A1B6B)), packageName = "com.globe.gcash.android", logoText = "G", logoRes = R.drawable.gcash),
+        EWallet(name = "Maya", gradientColors = listOf(Color(0xFF0A2E1A), Color(0xFF1B6B3A)), packageName = "com.paymaya", logoText = "maya", logoRes = R.drawable.maya),
+        EWallet(name = "GrabPay", gradientColors = listOf(Color(0xFF0A2E1A), Color(0xFF1B6B3A)), packageName = "com.grabtaxi.passenger", logoText = "Grab", logoRes = R.drawable.grab),
+        EWallet(name = "ShopeePay", gradientColors = listOf(Color(0xFF2E0A0A), Color(0xFF6B1B1B)), packageName = "com.shopee.ph", logoText = "S", logoRes = R.drawable.shopee)
     )
 
     Box(
@@ -803,12 +803,26 @@ fun PaymentSelectScreen(navController: NavController, qrData: String) {
             ) {
                 items(wallets) { wallet ->
                     EWalletCard(wallet = wallet, onClick = {
-                        try {
-                            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(wallet.deeplink))
-                            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-                            context.startActivity(intent)
-                        } catch (e: Exception) {
-                            Toast.makeText(context, "${wallet.name} app not installed", Toast.LENGTH_SHORT).show()
+                        val launchIntent = context.packageManager.getLaunchIntentForPackage(wallet.packageName)
+                        if (launchIntent != null) {
+                            launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                            context.startActivity(launchIntent)
+                        } else {
+                            try {
+                                val marketIntent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("market://details?id=${wallet.packageName}")
+                                )
+                                marketIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                context.startActivity(marketIntent)
+                            } catch (e: Exception) {
+                                val webIntent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("https://play.google.com/store/apps/details?id=${wallet.packageName}")
+                                )
+                                webIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                                context.startActivity(webIntent)
+                            }
                         }
                     })
                 }
