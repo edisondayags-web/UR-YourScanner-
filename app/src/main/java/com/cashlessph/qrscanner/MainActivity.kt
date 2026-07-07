@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.media.AudioManager
+import android.media.ToneGenerator
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -187,7 +189,9 @@ fun detectMerchant(qrData: String): String {
 fun QrScannerScreen(db: AppDatabase, navController: NavController) {
     val lifecycleOwner = LocalLifecycleOwner.current
     var isProcessing by remember { mutableStateOf(false) }
+    var showCheck by remember { mutableStateOf(false) }
     val cameraExecutor = remember { Executors.newSingleThreadExecutor() }
+    val toneGen = remember { ToneGenerator(AudioManager.STREAM_NOTIFICATION, 100) }
 
     Box(modifier = Modifier.fillMaxSize()) {
         AndroidView(
@@ -209,6 +213,11 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
                                 processImageProxy(imageProxy) { result ->
                                     if (result != null && !isProcessing) {
                                         isProcessing = true
+                                        showCheck = true
+                                        toneGen.startTone(ToneGenerator.TONE_PROP_BEEP2, 150)
+                                        android.os.Handler(android.os.Looper.getMainLooper()).postDelayed({
+                                            showCheck = false
+                                        }, 500)
                                         val merchant = detectMerchant(result)
 
                                         CoroutineScope(Dispatchers.IO).launch {
@@ -258,7 +267,16 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
                 .size(260.dp)
                 .border(3.dp, Color(0xFFFF4D8D), RoundedCornerShape(24.dp))
         )
-
+if (showCheck) {
+            Icon(
+                imageVector = Icons.Default.CheckCircle,
+                contentDescription = "Scanned",
+                tint = Color(0xFFFF4D8D),
+                modifier = Modifier
+                    .align(Alignment.Center)
+                    .size(90.dp)
+            )
+}
         Text(
             text = "Point camera at QRPH code",
             color = Color(0xFFFF4D8D),
