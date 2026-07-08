@@ -149,6 +149,8 @@ class MainActivity : ComponentActivity() {
                 composable("payment_select/{qrData}") { backStackEntry ->
                     val qrData = backStackEntry.arguments?.getString("qrData") ?: ""
                     PaymentSelectScreen(navController, qrData)
+                }
+            }
         }
     }
 }
