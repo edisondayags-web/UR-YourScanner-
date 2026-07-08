@@ -940,3 +940,4 @@ fun EWalletCard(wallet: EWallet, onClick: () -> Unit) {
         }
     }
 }
+
