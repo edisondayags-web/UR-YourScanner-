@@ -67,7 +67,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
-
+import android.util.Size
 @Entity(tableName = "qr_list")
 data class QrEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
@@ -214,6 +214,7 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
                     }
 
                     val imageAnalyzer = ImageAnalysis.Builder()
+                        .setTargetResolution(Size(1280, 720))
                         .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                         .build()
                         .also {
