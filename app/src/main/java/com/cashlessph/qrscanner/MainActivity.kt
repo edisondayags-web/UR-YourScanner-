@@ -514,30 +514,57 @@ fun SettingsScreen(navController: NavController) {
             SettingsItem(icon = "🔒", title = "Privacy Policy", subtitle = "Read our privacy policy\nand data practices", iconBgColor = Color(0xFF3D1A2B), onClick = { navController.navigate("privacy") })
             Spacer(modifier = Modifier.height(12.dp))
             SettingsItem(icon = "ℹ", title = "About UR Scanner", subtitle = "Learn more about the app\nand its mission", iconBgColor = Color(0xFF3D1A2B), onClick = { navController.navigate("about") })
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(Color(0xFF1A1A1A), RoundedCornerShape(16.dp))
-                    .border(1.dp, Color(0xFF2A2A2A), RoundedCornerShape(16.dp))
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(10.dp)
             ) {
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Version", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Medium)
-                    Text("1.0.0", color = Color(0xFFFF4D8D), fontSize = 24.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 4.dp))
-                    Text("You're using the latest version", color = Color.Gray, fontSize = 13.sp)
+                Row(
+                    modifier = Modifier
+                        .weight(1f)
+                        .background(Color(0xFF1A1A1A), RoundedCornerShape(12.dp))
+                        .border(1.dp, Color(0xFF2A2A2A), RoundedCornerShape(12.dp))
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text("Version", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                        Text("1.0.0", color = Color(0xFFFF4D8D), fontSize = 15.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(vertical = 2.dp))
+                        Text("Latest version", color = Color.Gray, fontSize = 9.sp)
+                    }
+                    Box(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .background(Color(0xFF3D1A2B), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.Settings, contentDescription = null, tint = Color(0xFFFF4D8D).copy(alpha = 0.35f), modifier = Modifier.size(28.dp))
+                        Text("✓", color = Color(0xFFFF4D8D), fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    }
                 }
 
-                Box(
+                Row(
                     modifier = Modifier
-                        .size(48.dp)
-                        .background(Color(0xFF3D1A2B), CircleShape),
-                    contentAlignment = Alignment.Center
+                        .weight(1f)
+                        .background(Color(0xFF1A1A1A), RoundedCornerShape(12.dp))
+                        .border(1.dp, Color(0xFF2A2A2A), RoundedCornerShape(12.dp))
+                        .padding(10.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Box(modifier = Modifier.size(40.dp).border(2.dp, Color(0xFFFF4D8D), CircleShape))
-                    Text("✓", color = Color(0xFFFF4D8D), fontSize = 24.sp, fontWeight = FontWeight.Bold)
+                    Box(
+                        modifier = Modifier
+                            .size(26.dp)
+                            .background(Color(0xFF3D1A2B), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(Icons.Default.Person, contentDescription = null, tint = Color(0xFFFF4D8D), modifier = Modifier.size(14.dp))
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Column {
+                        Text("Developer", color = Color.Gray, fontSize = 9.sp)
+                        Text("EDISON SUCLATAN. DAYAGUIT", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Medium)
+                    }
                 }
             }
 
