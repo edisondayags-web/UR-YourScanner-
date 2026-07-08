@@ -940,12 +940,3 @@ fun EWalletCard(wallet: EWallet, onClick: () -> Unit) {
         }
     }
 }
-@Composable
-fun CreateQrScreen(navController: NavController) {
-    Box(
-        modifier = Modifier.fillMaxSize().background(Color(0xFF0A0A0A)),
-        contentAlignment = Alignment.Center
-    ) {
-        Text("Create QR Screen - soon", color = Color.White)
-    }
-}
