@@ -68,6 +68,11 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.Executors
 import android.util.Size
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.qrcode.QRCodeWriter
+import android.graphics.Bitmap
+import android.graphics.Color as AndroidColor
+import androidx.compose.ui.graphics.asImageBitmap
 @Entity(tableName = "qr_list")
 data class QrEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
@@ -141,6 +146,7 @@ class MainActivity : ComponentActivity() {
                 composable("payment_select/{qrData}") { backStackEntry ->
                     val qrData = backStackEntry.arguments?.getString("qrData") ?: ""
                     PaymentSelectScreen(navController, qrData)
+                    composable("create_qr") { CreateQrScreen(navController) }
                 }
             }
         }
@@ -495,7 +501,8 @@ fun SettingsScreen(navController: NavController) {
 
             Text(text = "Settings", color = Color(0xFFFF4D8D), fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
             Text(text = "Manage your app preferences", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 24.dp), textAlign = TextAlign.Center)
-
+            SettingsItem(icon = "➕", title = "Create QR", subtitle = "Generate your own QR code", iconBgColor = Color(0xFF3D1A2B), onClick = { navController.navigate("create_qr") })
+            Spacer(modifier = Modifier.height(12.dp))
             SettingsItem(icon = "📊", title = "Contact Us", subtitle = "Get in touch with our support team", iconBgColor = Color(0xFF3D1A2B), onClick = { })
             Spacer(modifier = Modifier.height(12.dp))
             SettingsItem(icon = "🔒", title = "Privacy Policy", subtitle = "Read our privacy policy\nand data practices", iconBgColor = Color(0xFF3D1A2B), onClick = { navController.navigate("privacy") })
