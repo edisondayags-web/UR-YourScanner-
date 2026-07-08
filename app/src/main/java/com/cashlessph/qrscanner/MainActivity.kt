@@ -73,6 +73,7 @@ import com.google.zxing.qrcode.QRCodeWriter
 import android.graphics.Bitmap
 import android.graphics.Color as AndroidColor
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
 @Entity(tableName = "qr_list")
 data class QrEntity(
     @PrimaryKey(autoGenerate = true) val id: Int = 0,
@@ -143,7 +144,8 @@ class MainActivity : ComponentActivity() {
                 composable("settings") { SettingsScreen(navController) }
                 composable("about") { AboutScreen(navController) }
                 composable("privacy") { PrivacyPolicyScreen(navController) }
-                composable("create_qr") { CreateQrScreen(navController) }
+                composable("create_qr") { CreateQrPhotoScreen(navController, "Create QR Code") }
+                composable("create_barcode") { CreateQrPhotoScreen(navController, "Create Barcode") }
                 composable("payment_select/{qrData}") { backStackEntry ->
                     val qrData = backStackEntry.arguments?.getString("qrData") ?: ""
                     PaymentSelectScreen(navController, qrData)
@@ -500,6 +502,10 @@ fun SettingsScreen(navController: NavController) {
             Text(text = "Settings", color = Color(0xFFFF4D8D), fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
             Text(text = "Manage your app preferences", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.fillMaxWidth().padding(top = 4.dp, bottom = 24.dp), textAlign = TextAlign.Center)
             SettingsItem(icon = "➕", title = "Create QR", subtitle = "Generate your own QR code", iconBgColor = Color(0xFF3D1A2B), onClick = { navController.navigate("create_qr") })
+            Spacer(modifier = Modifier.height(12.dp))
+            SettingsItem(icon = "▮▮▮", title = "Create Barcode", subtitle = "Generate a barcode", iconBgColor = Color(0xFF3D1A2B), onClick = { navController.navigate("create_barcode") })
+            Spacer(modifier = Modifier.height(12.dp))
+            SettingsItem(icon = "🔲", title = "Scan QR/Barcode", subtitle = "Go back to the scanner", iconBgColor = Color(0xFF3D1A2B), onClick = { navController.navigate("scanner") })
             Spacer(modifier = Modifier.height(12.dp))
             SettingsItem(icon = "📊", title = "Contact Us", subtitle = "Get in touch with our support team", iconBgColor = Color(0xFF3D1A2B), onClick = { })
             Spacer(modifier = Modifier.height(12.dp))
@@ -940,4 +946,175 @@ fun EWalletCard(wallet: EWallet, onClick: () -> Unit) {
         }
     }
 }
+// ------------------------------------------------------------------
+// CREATE QR/BARCODE WITH PHOTO — para sa meme/marketing na QR codes
+// ------------------------------------------------------------------
 
+fun generateQrWithLogo(content: String, logoBitmap: Bitmap?, sizePx: Int = 800): Bitmap? {
+    return try {
+        val writer = QRCodeWriter()
+        val hints = HashMap<com.google.zxing.EncodeHintType, Any>()
+        hints[com.google.zxing.EncodeHintType.ERROR_CORRECTION] = com.google.zxing.qrcode.decoder.ErrorCorrectionLevel.H
+        val bitMatrix = writer.encode(content, BarcodeFormat.QR_CODE, sizePx, sizePx, hints)
+        val bmp = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
+        for (x in 0 until sizePx) {
+            for (y in 0 until sizePx) {
+                bmp.setPixel(
+                    x, y,
+                    if (bitMatrix[x, y]) AndroidColor.BLACK else AndroidColor.WHITE
+                )
+            }
+        }
+
+        if (logoBitmap != null) {
+            val canvas = android.graphics.Canvas(bmp)
+            val logoSize = sizePx / 4
+            val logoLeft = (sizePx - logoSize) / 2
+            val logoTop = (sizePx - logoSize) / 2
+
+            val whitePad = 16
+            val paint = android.graphics.Paint()
+            paint.color = AndroidColor.WHITE
+            canvas.drawRect(
+                (logoLeft - whitePad).toFloat(),
+                (logoTop - whitePad).toFloat(),
+                (logoLeft + logoSize + whitePad).toFloat(),
+                (logoTop + logoSize + whitePad).toFloat(),
+                paint
+            )
+
+            val scaledLogo = Bitmap.createScaledBitmap(logoBitmap, logoSize, logoSize, true)
+            canvas.drawBitmap(scaledLogo, logoLeft.toFloat(), logoTop.toFloat(), null)
+        }
+
+        bmp
+    } catch (e: Exception) {
+        null
+    }
+}
+
+fun saveBitmapToDownloads(context: android.content.Context, bitmap: Bitmap, filename: String): Boolean {
+    return try {
+        val values = android.content.ContentValues().apply {
+            put(android.provider.MediaStore.Images.Media.DISPLAY_NAME, "$filename.png")
+            put(android.provider.MediaStore.Images.Media.MIME_TYPE, "image/png")
+            put(android.provider.MediaStore.Images.Media.RELATIVE_PATH, "Pictures/URScanner")
+        }
+        val uri = context.contentResolver.insert(
+            android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values
+        )
+        uri?.let {
+            context.contentResolver.openOutputStream(it)?.use { out ->
+                bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
+            }
+        }
+        uri != null
+    } catch (e: Exception) {
+        false
+    }
+}
+
+@Composable
+fun CreateQrPhotoScreen(navController: NavController, screenTitle: String) {
+    val context = LocalContext.current
+    var codeName by remember { mutableStateOf("") }
+    var pickedImage by remember { mutableStateOf<Bitmap?>(null) }
+    var generatedQr by remember { mutableStateOf<Bitmap?>(null) }
+
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        if (uri != null) {
+            val stream = context.contentResolver.openInputStream(uri)
+            val bmp = android.graphics.BitmapFactory.decodeStream(stream)
+            pickedImage = bmp
+            val nameForQr = if (codeName.isBlank()) "UR Scanner QR" else codeName
+            generatedQr = generateQrWithLogo(nameForQr, bmp)
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0A0A0A))
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 16.dp)
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 24.dp, bottom = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = { navController.popBackStack() }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = Color(0xFFFF4D8D))
+                }
+                Text(
+                    text = screenTitle,
+                    color = Color(0xFFFF4D8D),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.padding(start = 8.dp)
+                )
+            }
+
+            QrFieldInput("Name ng Code", codeName, { codeName = it })
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color(0xFF1A1A1A), RoundedCornerShape(12.dp))
+                    .border(1.dp, Color(0xFFFF4D8D), RoundedCornerShape(12.dp))
+                    .clickable { imagePicker.launch("image/*") }
+                    .padding(vertical = 16.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Text("Upload ⬇", color = Color(0xFFFF4D8D), fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            if (generatedQr != null) {
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(260.dp)
+                            .background(Color.White, RoundedCornerShape(16.dp)),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            bitmap = generatedQr!!.asImageBitmap(),
+                            contentDescription = "Generated QR",
+                            modifier = Modifier.size(230.dp)
+                        )
+                    }
+                    Spacer(modifier = Modifier.height(20.dp))
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFFF4D8D), RoundedCornerShape(12.dp))
+                            .clickable {
+                                val name = if (codeName.isBlank()) "ur_scanner_qr" else codeName
+                                val saved = saveBitmapToDownloads(context, generatedQr!!, name)
+                                Toast.makeText(
+                                    context,
+                                    if (saved) "Na-save sa Pictures/URScanner" else "Failed to save",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            .padding(vertical = 16.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text("Download ⬇", color = Color.White, fontSize = 16.sp, fontWeight = FontWeight.Bold)
+                    }
+                }
+            }
+        }
+    }
+}
