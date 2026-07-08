@@ -262,18 +262,8 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
                         cameraProvider.unbindAll()
                         val camera = cameraProvider.bindToLifecycle(
                             lifecycleOwner, cameraSelector, preview, imageAnalyzer
-                        )
-
-                        val meteringPointFactory = SurfaceOrientedMeteringPointFactory(
-                            previewView.width.toFloat(),
-                            previewView.height.toFloat()
-                        )
-                        val centerPoint = meteringPointFactory.createPoint(0.5f, 0.5f)
-                        val focusAction = FocusMeteringAction.Builder(
-                            centerPoint,
-                            FocusMeteringAction.FLAG_AF or FocusMeteringAction.FLAG_AE
-                        ).disableAutoCancel().build()
-                        camera.cameraControl.startFocusAndMetering(focusAction)
+                            }
+        
                     } catch (e: Exception) {
                         e.printStackTrace()
                     }
