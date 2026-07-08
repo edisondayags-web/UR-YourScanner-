@@ -143,12 +143,10 @@ class MainActivity : ComponentActivity() {
                 composable("settings") { SettingsScreen(navController) }
                 composable("about") { AboutScreen(navController) }
                 composable("privacy") { PrivacyPolicyScreen(navController) }
+                composable("create_qr") { CreateQrScreen(navController) }
                 composable("payment_select/{qrData}") { backStackEntry ->
                     val qrData = backStackEntry.arguments?.getString("qrData") ?: ""
                     PaymentSelectScreen(navController, qrData)
-                    composable("create_qr") { CreateQrScreen(navController) }
-                }
-            }
         }
     }
 }
@@ -736,7 +734,7 @@ fun PrivacyPolicyScreen(navController: NavController) {
 
             item {
                 Text("Privacy Policy", color = Color(0xFFFF4D8D), fontSize = 28.sp, fontWeight = FontWeight.Bold, modifier = Modifier.fillMaxWidth(), textAlign = TextAlign.Center)
-                Text("Last updated: May 20, 2024", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.fillMaxWidth().padding(top = 4.dp), textAlign = TextAlign.Center)
+                Text("Last updated: September 27, 2027", color = Color.Gray, fontSize = 14.sp, modifier = Modifier.fillMaxWidth().padding(top = 4.dp), textAlign = TextAlign.Center)
             }
 
             item {
@@ -940,5 +938,14 @@ fun EWalletCard(wallet: EWallet, onClick: () -> Unit) {
                 fontWeight = FontWeight.Bold
             )
         }
+    }
+}
+@Composable
+fun CreateQrScreen(navController: NavController) {
+    Box(
+        modifier = Modifier.fillMaxSize().background(Color(0xFF0A0A0A)),
+        contentAlignment = Alignment.Center
+    ) {
+        Text("Create QR Screen - soon", color = Color.White)
     }
 }
