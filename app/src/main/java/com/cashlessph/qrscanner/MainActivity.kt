@@ -262,7 +262,7 @@ fun QrScannerScreen(db: AppDatabase, navController: NavController) {
                         cameraProvider.unbindAll()
                         val camera = cameraProvider.bindToLifecycle(
                             lifecycleOwner, cameraSelector, preview, imageAnalyzer
-                            }
+                            )
         
                     } catch (e: Exception) {
                         e.printStackTrace()
