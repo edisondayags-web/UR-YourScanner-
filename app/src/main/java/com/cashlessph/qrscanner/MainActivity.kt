@@ -1120,3 +1120,17 @@ fun CreateQrPhotoScreen(navController: NavController, screenTitle: String) {
         }
     }
 }
+@Composable
+fun QrFieldInput(
+    label: String,
+    value: String,
+    onValueChange: (String) -> Unit
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        label = { Text(label) },
+        modifier = Modifier.fillMaxWidth(),
+        singleLine = true
+    )
+}
