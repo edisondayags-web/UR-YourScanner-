@@ -1031,7 +1031,7 @@ fun CreateQrPhotoScreen(navController: NavController, screenTitle: String) {
             val bmp = android.graphics.BitmapFactory.decodeStream(stream)
             pickedImage = bmp
             val nameForQr = if (codeName.isBlank()) "UR Scanner QR" else codeName
-            generatedQr = generateQrWithLogo(nameForQr, bmp)
+            generatedQr = generateQrWithLogo(nameForQr, null)
         }
     }
 
